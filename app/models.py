@@ -18,25 +18,25 @@ from .database import Base
 
 
 # ---------- Enums ----------
-class TaskStatus(str, enum.Enum):
+class TaskStatus(enum.StrEnum):
     TODO = "todo"
     IN_PROGRESS = "in_progress"
     REVIEW = "review"
     DONE = "done"
 
 
-class SprintStatus(str, enum.Enum):
+class SprintStatus(enum.StrEnum):
     PLANNED = "planned"
     ACTIVE = "active"
     COMPLETED = "completed"
 
 
-class ProjectStatus(str, enum.Enum):
+class ProjectStatus(enum.StrEnum):
     ACTIVE = "active"
     ARCHIVED = "archived"
 
 
-class UserRole(str, enum.Enum):
+class UserRole(enum.StrEnum):
     PRODUCT_OWNER = "product_owner"
     SCRUM_MASTER = "scrum_master"
     DEVELOPER = "developer"
@@ -44,19 +44,19 @@ class UserRole(str, enum.Enum):
     ML_ENGINEER = "ml_engineer"
 
 
-class AnomalySeverity(str, enum.Enum):
+class AnomalySeverity(enum.StrEnum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
 
 
-class CICDStatusEnum(str, enum.Enum):
+class CICDStatusEnum(enum.StrEnum):
     SUCCESS = "success"
     FAILED = "failed"
     RUNNING = "running"
 
 
-class GitEventType(str, enum.Enum):
+class GitEventType(enum.StrEnum):
     COMMIT = "commit"
     PUSH = "push"
     MERGE_REQUEST = "merge_request"

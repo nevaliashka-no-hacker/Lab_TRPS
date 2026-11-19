@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -8,7 +8,7 @@ from . import models
 ModelT = TypeVar("ModelT", bound=models.Base)
 
 
-class CRUDBase(Generic[ModelT]):
+class CRUDBase[ModelT: models.Base]:
     def __init__(self, model: type[ModelT]):
         self.model = model
 

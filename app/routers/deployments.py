@@ -38,7 +38,11 @@ def get_deployment(dep_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{dep_id}", response_model=schemas.DeploymentOut)
-def update_deployment(dep_id: int, payload: schemas.DeploymentUpdate, db: Session = Depends(get_db)):
+def update_deployment(
+    dep_id: int,
+    payload: schemas.DeploymentUpdate,
+    db: Session = Depends(get_db),
+):
     obj = crud.deployment_crud.get(db, dep_id)
     if not obj:
         raise HTTPException(404, "Deployment not found")

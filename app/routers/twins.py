@@ -44,8 +44,16 @@ def add_anomaly(twin_id: int, payload: schemas.AnomalyCreate, db: Session = Depe
     return crud.anomaly_crud.create(db, payload)
 
 
-@router.post("/{twin_id}/recommendations", response_model=schemas.RecommendationOut, status_code=201)
-def add_recommendation(twin_id: int, payload: schemas.RecommendationCreate, db: Session = Depends(get_db)):
+@router.post(
+    "/{twin_id}/recommendations",
+    response_model=schemas.RecommendationOut,
+    status_code=201,
+)
+def add_recommendation(
+    twin_id: int,
+    payload: schemas.RecommendationCreate,
+    db: Session = Depends(get_db),
+):
     if not crud.twin_crud.get(db, twin_id):
         raise HTTPException(404, "Twin not found")
     payload.twin_id = twin_id
