@@ -1,14 +1,14 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
 
-from .. import schemas, crud
+from .. import crud, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/teams", tags=["Teams"])
 
 
-@router.get("/", response_model=List[schemas.TeamOut])
+@router.get("/", response_model=list[schemas.TeamOut])
 def list_teams(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.team_crud.list(db, skip, limit)
 

@@ -1,17 +1,17 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List, Optional
 
-from .. import schemas, crud, models
+from .. import crud, models, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/deployments", tags=["Deployments"])
 
 
-@router.get("/", response_model=List[schemas.DeploymentOut])
+@router.get("/", response_model=list[schemas.DeploymentOut])
 def list_deployments(
-    project_id: Optional[int] = None,
-    environment: Optional[models.Environment] = None,
+    project_id: int | None = None,
+    environment: models.Environment | None = None,
     db: Session = Depends(get_db),
 ):
     q = db.query(models.Deployment)

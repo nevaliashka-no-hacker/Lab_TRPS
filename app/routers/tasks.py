@@ -1,8 +1,8 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List, Optional
 
-from .. import schemas, crud, models
+from .. import crud, models, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
@@ -17,12 +17,12 @@ ALLOWED_TRANSITIONS = {
 }
 
 
-@router.get("/", response_model=List[schemas.TaskOut])
+@router.get("/", response_model=list[schemas.TaskOut])
 def list_tasks(
-    project_id: Optional[int] = None,
-    sprint_id: Optional[int] = None,
-    status: Optional[models.TaskStatus] = None,
-    assignee_id: Optional[int] = None,
+    project_id: int | None = None,
+    sprint_id: int | None = None,
+    status: models.TaskStatus | None = None,
+    assignee_id: int | None = None,
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),

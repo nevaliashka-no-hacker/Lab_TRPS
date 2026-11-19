@@ -1,20 +1,21 @@
-from typing import Optional, Type, TypeVar, Generic, List
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from typing import Generic, TypeVar
 
-from . import models, schemas
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from . import models
 
 ModelT = TypeVar("ModelT", bound=models.Base)
 
 
 class CRUDBase(Generic[ModelT]):
-    def __init__(self, model: Type[ModelT]):
+    def __init__(self, model: type[ModelT]):
         self.model = model
 
-    def get(self, db: Session, obj_id: int) -> Optional[ModelT]:
+    def get(self, db: Session, obj_id: int) -> ModelT | None:
         return db.query(self.model).filter(self.model.id == obj_id).first()
 
-    def list(self, db: Session, skip: int = 0, limit: int = 100) -> List[ModelT]:
+    def list(self, db: Session, skip: int = 0, limit: int = 100) -> list[ModelT]:
         return db.query(self.model).offset(skip).limit(limit).all()
 
     def create(self, db: Session, obj_in: BaseModel) -> ModelT:
@@ -74,11 +75,11 @@ def log_history(
     db: Session,
     entity_type: str,
     action: str,
-    user_id: Optional[int] = None,
-    task_id: Optional[int] = None,
-    sprint_id: Optional[int] = None,
-    old_value: Optional[str] = None,
-    new_value: Optional[str] = None,
+    user_id: int | None = None,
+    task_id: int | None = None,
+    sprint_id: int | None = None,
+    old_value: str | None = None,
+    new_value: str | None = None,
 ) -> models.History:
     """Аудит-запись (BC-7)."""
     entry = models.History(

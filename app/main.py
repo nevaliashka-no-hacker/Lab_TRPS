@@ -3,8 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .database import Base, engine
 from .routers import (
-    users, projects, sprints, tasks,
-    twins, integration, monitoring, history,
+    history,
+    integration,
+    monitoring,
+    projects,
+    sprints,
+    tasks,
+    twins,
+    users,
 )
 
 Base.metadata.create_all(bind=engine)

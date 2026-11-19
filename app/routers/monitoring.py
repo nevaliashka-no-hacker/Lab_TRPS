@@ -1,8 +1,8 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
 
-from .. import schemas, crud, models
+from .. import crud, models, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/monitoring", tags=["Monitoring (BC-6)"])
@@ -15,7 +15,7 @@ def add_tech_metric(payload: schemas.TechMetricCreate, db: Session = Depends(get
     return crud.tech_metric_crud.create(db, payload)
 
 
-@router.get("/health-checks", response_model=List[schemas.HealthCheckOut])
+@router.get("/health-checks", response_model=list[schemas.HealthCheckOut])
 def list_health_checks(db: Session = Depends(get_db)):
     return crud.health_crud.list(db, 0, 1000)
 

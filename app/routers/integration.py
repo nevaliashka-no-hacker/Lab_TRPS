@@ -1,8 +1,8 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
 
-from .. import schemas, crud
+from .. import crud, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/integration", tags=["Integration (BC-5)"])
@@ -15,7 +15,7 @@ def receive_git_event(payload: schemas.GitEventCreate, db: Session = Depends(get
     return crud.git_event_crud.create(db, payload)
 
 
-@router.get("/git-events", response_model=List[schemas.GitEventOut])
+@router.get("/git-events", response_model=list[schemas.GitEventOut])
 def list_git_events(project_id: int | None = None, db: Session = Depends(get_db)):
     from ..models import GitEvent
     q = db.query(GitEvent)
@@ -31,7 +31,7 @@ def receive_cicd_status(payload: schemas.CICDStatusCreate, db: Session = Depends
     return crud.cicd_crud.create(db, payload)
 
 
-@router.get("/cicd-statuses", response_model=List[schemas.CICDStatusOut])
+@router.get("/cicd-statuses", response_model=list[schemas.CICDStatusOut])
 def list_cicd_statuses(project_id: int | None = None, db: Session = Depends(get_db)):
     from ..models import CICDStatus
     q = db.query(CICDStatus)

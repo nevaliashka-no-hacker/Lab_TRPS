@@ -1,17 +1,17 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List, Optional
 
-from .. import schemas, crud, models
+from .. import crud, models, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/sprints", tags=["Sprints"])
 
 
-@router.get("/", response_model=List[schemas.SprintOut])
+@router.get("/", response_model=list[schemas.SprintOut])
 def list_sprints(
-    project_id: Optional[int] = None,
-    status: Optional[models.SprintStatus] = None,
+    project_id: int | None = None,
+    status: models.SprintStatus | None = None,
     db: Session = Depends(get_db),
 ):
     q = db.query(models.Sprint)
@@ -86,7 +86,7 @@ def complete_sprint(sprint_id: int, db: Session = Depends(get_db)):
         ("bug_rate", 0.0, "%"),
         ("test_coverage", 0.0, "%"),
     ]
-    created_metrics: List[models.Metric] = []
+    created_metrics: list[models.Metric] = []
     for name, value, unit in metrics_data:
         m = models.Metric(
             name=name, value=value, unit=unit,

@@ -1,10 +1,22 @@
 from datetime import datetime
-from typing import Optional, List, Any, Dict
-from pydantic import BaseModel, EmailStr, ConfigDict, Field, field_validator, model_validator
+from typing import Any
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    model_validator,
+)
 
 from .models import (
-    TaskStatus, SprintStatus, ProjectStatus, UserRole,
-    AnomalySeverity, CICDStatusEnum, GitEventType,
+    AnomalySeverity,
+    CICDStatusEnum,
+    GitEventType,
+    ProjectStatus,
+    SprintStatus,
+    TaskStatus,
+    UserRole,
 )
 
 
@@ -20,9 +32,9 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
-    role: Optional[UserRole] = None
+    username: str | None = None
+    email: EmailStr | None = None
+    role: UserRole | None = None
 
 
 class UserOut(UserBase):
@@ -34,9 +46,9 @@ class UserOut(UserBase):
 # ---------- Project (инварианты из ЛР2) ----------
 class ProjectBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
-    description: Optional[str] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    description: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
     status: ProjectStatus = ProjectStatus.ACTIVE
     owner_id: int
 
@@ -52,12 +64,12 @@ class ProjectCreate(ProjectBase):
 
 
 class ProjectUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    status: Optional[ProjectStatus] = None
-    owner_id: Optional[int] = None
+    name: str | None = None
+    description: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    status: ProjectStatus | None = None
+    owner_id: int | None = None
 
 
 class ProjectOut(ProjectBase):
@@ -69,8 +81,8 @@ class ProjectOut(ProjectBase):
 class SprintBase(BaseModel):
     name: str
     project_id: int
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
     status: SprintStatus = SprintStatus.PLANNED
 
     @model_validator(mode="after")
@@ -85,10 +97,10 @@ class SprintCreate(SprintBase):
 
 
 class SprintUpdate(BaseModel):
-    name: Optional[str] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    status: Optional[SprintStatus] = None
+    name: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    status: SprintStatus | None = None
 
 
 class SprintOut(SprintBase):
@@ -100,13 +112,13 @@ class SprintOut(SprintBase):
 # ---------- Task (инвариант: story_points ≥ 0, assignee exists) ----------
 class TaskBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=300)
-    description: Optional[str] = None
+    description: str | None = None
     story_points: int = Field(0, ge=0)
     status: TaskStatus = TaskStatus.TODO
     priority: int = Field(3, ge=1, le=5)
     project_id: int
-    sprint_id: Optional[int] = None
-    assignee_id: Optional[int] = None
+    sprint_id: int | None = None
+    assignee_id: int | None = None
 
 
 class TaskCreate(TaskBase):
@@ -114,13 +126,13 @@ class TaskCreate(TaskBase):
 
 
 class TaskUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    story_points: Optional[int] = Field(None, ge=0)
-    status: Optional[TaskStatus] = None
-    priority: Optional[int] = Field(None, ge=1, le=5)
-    sprint_id: Optional[int] = None
-    assignee_id: Optional[int] = None
+    title: str | None = None
+    description: str | None = None
+    story_points: int | None = Field(None, ge=0)
+    status: TaskStatus | None = None
+    priority: int | None = Field(None, ge=1, le=5)
+    sprint_id: int | None = None
+    assignee_id: int | None = None
 
 
 class TaskOut(TaskBase):
@@ -134,28 +146,28 @@ class TaskOut(TaskBase):
 class HistoryOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
-    user_id: Optional[int]
-    task_id: Optional[int]
-    sprint_id: Optional[int]
+    user_id: int | None
+    task_id: int | None
+    sprint_id: int | None
     entity_type: str
     action: str
-    old_value: Optional[str]
-    new_value: Optional[str]
+    old_value: str | None
+    new_value: str | None
     changed_at: datetime
 
 
 # ---------- DigitalTwin ----------
 class DigitalTwinCreate(BaseModel):
     project_id: int
-    model_data: Optional[Dict[str, Any]] = None
+    model_data: dict[str, Any] | None = None
 
 
 class DigitalTwinOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     project_id: int
-    model_data: Optional[Dict[str, Any]]
-    last_sync_at: Optional[datetime]
+    model_data: dict[str, Any] | None
+    last_sync_at: datetime | None
     version: int
 
 
@@ -163,9 +175,9 @@ class DigitalTwinOut(BaseModel):
 class MetricCreate(BaseModel):
     name: str
     value: float = Field(..., ge=0)
-    unit: Optional[str] = None
+    unit: str | None = None
     sprint_id: int
-    project_id: Optional[int] = None
+    project_id: int | None = None
 
 
 class MetricOut(MetricCreate):
@@ -215,9 +227,9 @@ class RecommendationOut(RecommendationCreate):
 class GitEventCreate(BaseModel):
     project_id: int
     event_type: GitEventType
-    commit_sha: Optional[str] = None
-    author: Optional[str] = None
-    payload: Optional[Dict[str, Any]] = None
+    commit_sha: str | None = None
+    author: str | None = None
+    payload: dict[str, Any] | None = None
 
 
 class GitEventOut(GitEventCreate):
@@ -228,7 +240,7 @@ class GitEventOut(GitEventCreate):
 
 class CICDStatusCreate(BaseModel):
     project_id: int
-    pipeline_id: Optional[str] = None
+    pipeline_id: str | None = None
     status: CICDStatusEnum
 
 
@@ -263,9 +275,9 @@ class HealthCheckOut(BaseModel):
 class SprintCompleteResult(BaseModel):
     sprint_id: int
     status: SprintStatus
-    metrics: List[MetricOut]
+    metrics: list[MetricOut]
     twin_updated: bool
     twin_version: int
-    predictions: List[PredictionOut]
-    anomalies: List[AnomalyOut]
-    recommendations: List[RecommendationOut]
+    predictions: list[PredictionOut]
+    anomalies: list[AnomalyOut]
+    recommendations: list[RecommendationOut]

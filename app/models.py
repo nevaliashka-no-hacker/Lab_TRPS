@@ -1,7 +1,15 @@
 import enum
+
 from sqlalchemy import (
-    Column, Integer, String, Float, DateTime, ForeignKey, Text,
-    Enum, Boolean, JSON
+    JSON,
+    Column,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func

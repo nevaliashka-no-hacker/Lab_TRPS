@@ -1,14 +1,14 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
 
-from .. import schemas, crud, models
+from .. import crud, models, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/twins", tags=["Digital Twin (BC-4)"])
 
 
-@router.get("/", response_model=List[schemas.DigitalTwinOut])
+@router.get("/", response_model=list[schemas.DigitalTwinOut])
 def list_twins(db: Session = Depends(get_db)):
     return crud.twin_crud.list(db, 0, 1000)
 
@@ -60,7 +60,7 @@ def add_metric(payload: schemas.MetricCreate, db: Session = Depends(get_db)):
     return crud.metric_crud.create(db, payload)
 
 
-@router.get("/metrics", response_model=List[schemas.MetricOut])
+@router.get("/metrics", response_model=list[schemas.MetricOut])
 def list_metrics(sprint_id: int | None = None, db: Session = Depends(get_db)):
     q = db.query(models.Metric)
     if sprint_id:

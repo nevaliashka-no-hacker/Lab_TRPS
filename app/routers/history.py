@@ -1,18 +1,18 @@
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import List, Optional
 
-from .. import schemas, crud, models
+from .. import models, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/history", tags=["History (BC-7)"])
 
 
-@router.get("/", response_model=List[schemas.HistoryOut])
+@router.get("/", response_model=list[schemas.HistoryOut])
 def list_history(
-    task_id: Optional[int] = None,
-    sprint_id: Optional[int] = None,
-    entity_type: Optional[str] = None,
+    task_id: int | None = None,
+    sprint_id: int | None = None,
+    entity_type: str | None = None,
     db: Session = Depends(get_db),
 ):
     q = db.query(models.History)
