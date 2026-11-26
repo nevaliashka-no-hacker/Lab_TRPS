@@ -1,4 +1,22 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: digital-twin-db
+    environment:
+      POSTGRES_USER: twin_user
+      POSTGRES_PASSWORD: twin_password
+      POSTGRES_DB: digital_twin_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U twin_user -d digital_twin_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   api:
     build:
       context: .
@@ -7,24 +25,48 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:////app/data/digital_twin.db
+      - DATABASE_URL=postgresql://twin_user:twin_password@db:5432/digital_twin_db
     volumes:
-      # Монтируем код для hot-reload при разработке
       - ./app:/app/app:ro
-      # Персистентное хранилище для SQLite
-      - twin_data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
     command: >
       uvicorn app.main:app
       --host 0.0.0.0
       --port 8000
       --reload
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
     restart: unless-stopped
 
 volumes:
-  twin_data:
+  pg_data:
+  grafana_data:

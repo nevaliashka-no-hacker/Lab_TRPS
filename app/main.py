@@ -1,16 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from .database import Base, engine
 from .routers import (
-    history,
-    integration,
-    monitoring,
-    projects,
-    sprints,
-    tasks,
-    twins,
-    users,
+    users, projects, sprints, tasks,
+    twins, integration, monitoring, history,
 )
 
 Base.metadata.create_all(bind=engine)
@@ -20,7 +15,7 @@ app = FastAPI(
     description=(
         "REST API для управления сущностями цифрового двойника процесса разработки. "
         "Модель соответствует ЛР1 (ER: User, Project, Sprint, Task, History) "
-        "и ЛР2 (DDD: BC-1…BC-7, инварианты агрегатов)."
+        "и ЛР2 (DDD: BC-1...BC-7, инварианты агрегатов)."
     ),
     version="2.0.0",
 )
@@ -32,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Prometheus metrics
+Instrumentator().instrument(app).expose(app)
 
 app.include_router(users.router)
 app.include_router(projects.router)
