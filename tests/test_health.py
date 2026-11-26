@@ -1,17 +1,12 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
-
-
-def test_root():
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.json()["service"] == "Digital Twin of Development Process API"
+def test_root(client):
+    resp = client.get("/")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["service"] == "Digital Twin of Development Process API"
+    assert "bounded_contexts" in data
 
 
-def test_health():
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+def test_health(client):
+    resp = client.get("/health")
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ok"}
